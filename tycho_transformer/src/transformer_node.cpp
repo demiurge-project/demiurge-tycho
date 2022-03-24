@@ -6,16 +6,18 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <cmath>
 
-#define CALIBRATE false
-
 class SubscribeAndPublish
 {
 public:
-    struct transformerData{
-        int count;
-        std::map<int, ros::Publisher> list_publishers_;
-        std::map<int, nav_msgs::Odometry> list_messages_;
-        std::string namespace_;
+    struct transformerData
+    {
+        std::map<int, ros::Publisher> list_publishers;
+        std::map<int, nav_msgs::Odometry> list_messages;
+        std::string ns;
+        double x_offset;
+        double y_offset;
+        double angular_offset;
+        double scale_factor;
     } transformer;
  
     SubscribeAndPublish() 
@@ -33,22 +35,30 @@ public:
             std::string topic_name = topic_prefix + numstr + "/odom";
 
             // Add publisher to list of publishers
-            pub_odom_ = nodeHandle.advertise<nav_msgs::Odometry>(topic_name, 20);
-            transformer.list_publishers_.insert(std::pair<int, ros::Publisher>(i, pub_odom_));
-            transformer.list_messages_.insert(std::pair<int, nav_msgs::Odometry>(i, robot_pose_msg));
+            pub_odom_ = node_handle_.advertise<nav_msgs::Odometry>(topic_name, 20);
+            transformer.list_publishers.insert(std::pair<int, ros::Publisher>(i, pub_odom_));
+            transformer.list_messages.insert(std::pair<int, nav_msgs::Odometry>(i, robot_pose_msg));
         }
  
         //Topic you want to subscribe
-        sub_tracker_ = nodeHandle.subscribe("tracker/positions_stamped", 20, &SubscribeAndPublish::transformerCallback, this);
+        sub_tracker_ = node_handle_.subscribe("tracker/positions_stamped", 20, &SubscribeAndPublish::transformerCallback, this);
 
         // Get namespace
-        transformer.namespace_ = ros::this_node::getNamespace();
+        transformer.ns = ros::this_node::getNamespace();
+
+        // Get config data
+        std::string param = transformer.ns + "/transformer/x_offset";
+        node_handle_.getParam(param, transformer.x_offset);
+        param = transformer.ns + "/transformer/y_offset";
+        node_handle_.getParam(param, transformer.y_offset);
+        param = transformer.ns + "/transformer/angular_offset";
+        node_handle_.getParam(param, transformer.angular_offset);
+        param = transformer.ns + "/transformer/scale_factor";
+        node_handle_.getParam(param, transformer.scale_factor);
     }
 
     void transformerCallback(const std_msgs::UInt32MultiArrayConstPtr& msg)
     {
-        // ros::Time start = ros::Time::now();
-
         int size = msg->data.size(); // Get size of incoming list
 
         if (size > 2) // Timestamp is always in the first two entires
@@ -74,47 +84,17 @@ public:
                 std::vector<double> y(4);
                 for (int j = 0; j < 4; ++j)
                 {
-                    int x_tracker = msg->data.at(2*j + 1 + i);
+                    // Transform left-handed (camera) frame to right-handed (arena) frame
+                    int x_tracker = -msg->data.at(2*j + 1 + i);
                     int y_tracker = msg->data.at(2*j + 2 + i);
 
-                    // Skip transformations for calibration of the transformer
-                    if (CALIBRATE)
-                    {
-                        x.at(j) = x_tracker;
-                        y.at(j) = y_tracker;
-                        continue;
-                    }
+                    // Translate and scale
+                    double x_tmp = (x_tracker - transformer.x_offset) * transformer.scale_factor;
+                    double y_tmp = (y_tracker - transformer.y_offset) * transformer.scale_factor;
 
-                    if (transformer.namespace_ == "/camera_0")
-                    {
-                        // Transform to local frame, translate and scale
-                        double x_tmp = (-x_tracker + 828) * 0.001701;
-                        double y_tmp = (y_tracker - 207) * 0.001701;
-
-                        // Rotate
-                        x.at(j) = x_tmp*cos(-0.0377) - y_tmp*sin(-0.0377);
-                        y.at(j) = x_tmp*sin(-0.0377) + y_tmp*cos(-0.0377);
-                    }
-                    else if (transformer.namespace_ == "/camera_1")
-                    {
-                        // Transform to local frame, translate and scale
-                        double x_tmp = (-x_tracker + 913) * 0.001683;
-                        double y_tmp = (y_tracker - 1044) * 0.001683;
-
-                        // Rotate
-                        x.at(j) = x_tmp*cos(-0.0088) - y_tmp*sin(-0.0088);
-                        y.at(j) = x_tmp*sin(-0.0088) + y_tmp*cos(-0.0088);
-                    }
-                    else if (transformer.namespace_ == "/camera_2")
-                    {
-                        // Transform to local frame, translate and scale
-                        double x_tmp = (-y_tracker + 620) * 0.001966;
-                        double y_tmp = (-x_tracker + 764) * 0.001966;
-
-                        // Rotate
-                        x.at(j) = x_tmp*cos(-0.0071) - y_tmp*sin(-0.0071);
-                        y.at(j) = x_tmp*sin(-0.0071) + y_tmp*cos(-0.0071);
-                    }
+                    // Rotate
+                    x.at(j) = x_tmp*cos(-transformer.angular_offset) - y_tmp*sin(-transformer.angular_offset);
+                    y.at(j) = x_tmp*sin(-transformer.angular_offset) + y_tmp*cos(-transformer.angular_offset);
                 }
 
                 // Compute position of the center of the robot marker
@@ -122,8 +102,8 @@ public:
                 double pose_y = 0.0;
                 for (int j = 0; j < 4; ++j)
                 {
-                    pose_x += x.at(j) / 4;
-                    pose_y += y.at(j) / 4;
+                    pose_x += x.at(j) / 4.0;
+                    pose_y += y.at(j) / 4.0;
                 }
 
                 robot_pose_msg.pose.pose.position.x = pose_x;
@@ -146,25 +126,21 @@ public:
                                                   0.0,  0.0,  0.0, 0.0, 0.0, 1e-6};
 
                 // Publish to corresponding topic
-                transformer.list_messages_.at(robot_id) = robot_pose_msg;
+                transformer.list_messages.at(robot_id) = robot_pose_msg;
             }
 
             pub_markers();
         }
-
-        // ros::Time end = ros::Time::now();
-        // ros::Duration interval = end - start;
-        // std::cout << "Transformer callback duration: " << interval.toNSec() << " ns" << std::endl;
     }
 
     void pub_markers()
     {
         for (int i = 0; i < 50; i++)
         {
-            if (transformer.list_messages_.at(i).header.stamp.sec != 0)
+            if (transformer.list_messages.at(i).header.stamp.sec != 0)
             {
-                transformer.list_publishers_.at(i).publish(transformer.list_messages_.at(i));
-                transformer.list_messages_.at(i).header.stamp.sec = 0;
+                transformer.list_publishers.at(i).publish(transformer.list_messages.at(i));
+                transformer.list_messages.at(i).header.stamp.sec = 0;
             }
         }
 
@@ -174,21 +150,13 @@ public:
 private:
     ros::Publisher pub_odom_;
     ros::Subscriber sub_tracker_;
-    ros::Timer timer;
-    ros::NodeHandle nodeHandle;
- 
-};//End of class SubscribeAndPublish
+    ros::NodeHandle node_handle_;
+};
  
 int main(int argc, char **argv)
 {
-    //Initiate ROS
     ros::init(argc, argv, "transformer");
-
-    //Create an object of class SubscribeAndPublish that will take care of everything
     SubscribeAndPublish SAPObject;
- 
-    ROS_INFO("Transformer Node Ok!!!");
- 
     ros::spin();
  
     return 0;

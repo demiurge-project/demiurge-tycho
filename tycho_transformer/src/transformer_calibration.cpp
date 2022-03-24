@@ -46,7 +46,7 @@ public:
 
 	// calibration_tags holds the IDs of the 9 tags used for calibration.
 	// The first tag is the one in the centre and the rest are given anti-clockwise,
-	// starting from 0 degrees.
+	// starting from 0 degrees with respect to the x-axis of the arena.
 	// Currently hardcoded and initialised in the constructor
 	const std::vector<int> calibration_tags = {38, 17, 37, 23, 31, 40, 22, 10, 45};
 
@@ -64,35 +64,17 @@ public:
 			for (int i = 2; i < size; i += 9)
 			{
 				// Calculate position of the centre of each tag
-				struct point tag_centre = {0};
+				struct point tag_centre = {0.0};
 				for (int j = 0; j < 4; ++j)
 				{
-					double x_tmp = static_cast<double>(msg->data.at(2*j + 1 + i)) / 4.0;
-					double y_tmp = static_cast<double>(msg->data.at(2*j + 2 + i)) / 4.0;
-
-					// Transform camera coordinates to arena coordinates
-					if (ros_namespace == "/camera_0" || ros_namespace == "/camera_1")
-					{
-						tag_centre.x -= x_tmp;
-						tag_centre.y += y_tmp;
-					}
-					else if (ros_namespace == "/camera_2")
-					{
-						tag_centre.x -= y_tmp;
-						tag_centre.y -= x_tmp;
-					}
+					// Transform left-handed (camera) frame to right-handed (arena) frame
+					tag_centre.x -= static_cast<double>(msg->data.at(2*j + 1 + i)) / 4.0;
+					tag_centre.y += static_cast<double>(msg->data.at(2*j + 2 + i)) / 4.0;
 				}
 
 				// Add tag to map
 				tags[msg->data.at(i)] = tag_centre;
 			}
-
-			// // Print map for debugging
-			// std::cout << "Detected tags:" << std::endl;
-			// for (const auto& elem : tags)
-			// {
-			// 	std::cout << elem.first << " -> (" << elem.second.x << ", " << elem.second.y << ")\n";
-			// }
 
 			// Calculate angular offset and scale factor
 			double angular_offset = 0.0;
@@ -107,30 +89,17 @@ public:
 				// Angular offset
 				double orientation = std::atan2(y2 - y1, x2 - x1);
 				angular_offset += (orientation - i * M_PI_4) / 4.0;
-				double debug_angular_offset = orientation - i * M_PI_4;
 
 				// Scale factor
 				double size = std::sqrt(std::pow(y2 - y1, 2) + std::pow(x2 - x1, 2));
 				scale_factor += size / 4.0;
-				double debug_scale_factor = grid_dim * 2.0 / size;
-
-				// std::cout << "==============================================\n"
-				//           << "Tag: " << i+1 << ", ID: " << calibration_tags.at(i+1) << "\n"
-				//           << "Position: (" << x2 << ", " << y2 << ")\n"
-				//           << "Tag: " << i+5 << ", ID: " << calibration_tags.at(i+5) << "\n" 
-				//           << "Position: (" << x1 << ", " << y1 << ")\n"
-				//           << "----------------------------------------------\n"
-				//           << "Orientation: " << orientation << "\n"
-				//           << "Angular offset: " << debug_angular_offset << "\n"
-				//           << "Size: " << size << "\n"
-				//           << "Scale factor: " << debug_scale_factor << std::endl;
 			}
 
 			scale_factor = grid_dim * 2.0 / scale_factor;
 
 			// Write YAML file
-			yaml_ << "centre_x : " << tags[calibration_tags.at(0)].x << "\n";
-			yaml_ << "centre_y : " << tags[calibration_tags.at(0)].y << "\n";
+			yaml_ << "x_offset : " << tags[calibration_tags.at(0)].x << "\n";
+			yaml_ << "y_offset : " << tags[calibration_tags.at(0)].y << "\n";
 			yaml_ << "angular_offset : " << angular_offset << "\n";
 			yaml_ << "scale_factor : " << scale_factor << "\n";
 

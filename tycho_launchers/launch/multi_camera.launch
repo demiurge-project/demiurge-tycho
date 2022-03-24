@@ -7,19 +7,25 @@
     <group ns="camera_0">
         <include file="$(find tycho_launchers)/launch/mono_camera_0.launch" /> 
         <node name="tracker" pkg="tracker" type="tracker" output="screen"/>
-        <node name="transformer" pkg="transformer" type="transformer" output="screen"/> 
+        <node name="transformer" pkg="transformer" type="transformer" output="screen">
+            <rosparam file="$(find transformer)/config/camera_0_transformer.yaml"/>
+        </node>
     </group>
 
     <group ns="camera_1">
         <include file="$(find tycho_launchers)/launch/mono_camera_1.launch" />
         <node name="tracker" pkg="tracker" type="tracker" output="screen"/>
-        <node name="transformer" pkg="transformer" type="transformer" output="screen"/>  
+        <node name="transformer" pkg="transformer" type="transformer" output="screen">
+            <rosparam file="$(find transformer)/config/camera_1_transformer.yaml"/>
+        </node> 
     </group>
 
     <group ns="camera_2">
         <include file="$(find tycho_launchers)/launch/mono_camera_2.launch" />
         <node name="tracker" pkg="tracker" type="tracker" output="screen"/>
-        <node name="transformer" pkg="transformer" type="transformer" output="screen"/> 
+        <node name="transformer" pkg="transformer" type="transformer" output="screen">
+            <rosparam file="$(find transformer)/config/camera_2_transformer.yaml"/>
+        </node>
     </group>
 
     <!--We determined empirically that the detection rates of the tags are, from highest to lowest:

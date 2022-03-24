@@ -4,18 +4,18 @@
 	<group ns="camera_0">
 		<include file="$(find tycho_launchers)/launch/mono_camera_0.launch" />
 		<node name="tracker" pkg="tracker" type="tracker" output="screen"/>
-		<node name="calibrator" pkg="transformer" type="calibrator" output="screen"/> 
+		<node name="calibrator" pkg="transformer" type="transformer_calibrator" output="screen"/> 
 	</group>
 
 	<group ns="camera_1">
 		<include file="$(find tycho_launchers)/launch/mono_camera_1.launch" />
 		<node name="tracker" pkg="tracker" type="tracker" output="screen"/>
-		<node name="calibrator" pkg="transformer" type="calibrator" output="screen"/> 
+		<node name="calibrator" pkg="transformer" type="transformer_calibrator" output="screen"/> 
 	</group>
 
 	<group ns="camera_2">
 		<include file="$(find tycho_launchers)/launch/mono_camera_2.launch" />
 		<node name="tracker" pkg="tracker" type="tracker" output="screen"/>
-		<node name="calibrator" pkg="transformer" type="calibrator" output="screen"/> 
+		<node name="calibrator" pkg="transformer" type="transformer_calibrator" output="screen"/> 
 	</group>
 </launch>
