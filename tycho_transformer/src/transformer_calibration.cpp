@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <ros/package.h>
 #include <std_msgs/UInt32MultiArray.h>
 #include <std_msgs/Bool.h>
 #include <iostream>
@@ -16,9 +17,9 @@ public:
 		pub_alive_ = node_handle_.advertise<std_msgs::Bool>("alive", 10);
 
 		// Open YAML file to store the calibration parameters
-		ros_namespace = ros::this_node::getNamespace();
-		std::string filename = ros_namespace + "_transformer.yaml";
-		filename.erase(0, 1);
+		std::string path = ros::package::getPath("transformer") + "/config";
+		std::string ros_namespace = ros::this_node::getNamespace();
+		std::string filename = path + ros_namespace + "_transformer.yaml";
 		yaml_.open(filename);
 		if (yaml_.is_open())
 		{
@@ -42,7 +43,6 @@ public:
 	};
 
 	bool done;
-	std::string ros_namespace;
 
 	// calibration_tags holds the IDs of the 9 tags used for calibration.
 	// The first tag is the one in the centre and the rest are given anti-clockwise,
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 	TransformerCalibrator calibrator_object;
 
 	ros::Rate rate(30);
-	while (ros::ok() && calibrator_object.done == false)
+	while (ros::ok() && !calibrator_object.done)
 	{
 		ros::spinOnce();
 		rate.sleep();

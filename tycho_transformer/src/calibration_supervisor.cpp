@@ -1,14 +1,14 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 
-class Supervisor
+class TransformerSupervisor
 {
 public:
-	Supervisor(ros::NodeHandle& nh, std::string ros_namespace)
+	TransformerSupervisor(ros::NodeHandle& nh, std::string ros_namespace)
 		: alive(true)
 	{
 		std::string topic = ros_namespace + "/alive";
-		sub_calibrator_ = nh.subscribe(topic, 10, &Supervisor::supervisorCallback, this);
+		sub_calibrator_ = nh.subscribe(topic, 10, &TransformerSupervisor::supervisorCallback, this);
 	}
 
 	bool alive;
@@ -29,9 +29,9 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "supervisor");
 	ros::NodeHandle node_handle;
 
-	Supervisor supervisor_camera_0(node_handle, "/camera_0");
-	Supervisor supervisor_camera_1(node_handle, "/camera_1");
-	Supervisor supervisor_camera_2(node_handle, "/camera_2");
+	TransformerSupervisor supervisor_camera_0(node_handle, "/camera_0");
+	TransformerSupervisor supervisor_camera_1(node_handle, "/camera_1");
+	TransformerSupervisor supervisor_camera_2(node_handle, "/camera_2");
 
 	ros::Rate rate(30);
 	while (ros::ok() && (supervisor_camera_0.alive ||
@@ -41,6 +41,9 @@ int main(int argc, char **argv)
 		ros::spinOnce();
 		rate.sleep();
 	}
+
+	ros::Duration(0.5).sleep();
+	ROS_INFO("Transformer calibration done. Shutting down...");
 
 	return 0;
 }

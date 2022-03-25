@@ -9,6 +9,7 @@ project(transformer)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  roslib
   std_msgs
   nav_msgs
 )
@@ -135,13 +136,14 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(transformer src/transformer_node.cpp)
 add_executable(transformer_calibrator src/transformer_calibration.cpp)
-add_executable(supervisor src/calibration_supervisor.cpp)
+add_executable(transformer_supervisor src/calibration_supervisor.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
+set_target_properties(transformer_calibrator PROPERTIES OUTPUT_NAME calibrator)
+set_target_properties(transformer_supervisor PROPERTIES OUTPUT_NAME supervisor)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -150,7 +152,7 @@ add_executable(supervisor src/calibration_supervisor.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(transformer ${catkin_LIBRARIES})
 target_link_libraries(transformer_calibrator ${catkin_LIBRARIES})
-target_link_libraries(supervisor ${catkin_LIBRARIES})
+target_link_libraries(transformer_supervisor ${catkin_LIBRARIES})
 
 #############
 ## Install ##
