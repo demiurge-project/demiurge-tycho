@@ -4,9 +4,16 @@
     <node pkg="tf2_ros" type="static_transform_publisher" name="epuck_1_broadcaster" args="0 0 0 0 0 0 arena epuck_1" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="camera_2_broadcaster" args="44   -8 0 0 0 0.0525831 map camera_2" /-->
 
+    <arg name="crop" default="false"/>
+
     <group ns="camera_0">
         <include file="$(find tycho_launchers)/launch/mono_camera_0.launch" /> 
-        <node name="tracker" pkg="tracker" type="tracker" output="screen"/>
+        <node if="$(arg crop)" name="cropper" pkg="cropper" type="cropper" output="screen">
+            <rosparam file="$(find cropper)/config/camera_0_cropper.yaml"/>
+        </node>
+        <node name="tracker" pkg="tracker" type="tracker" output="screen">
+            <param name="crop" value="$(arg crop)"/>
+        </node>
         <node name="transformer" pkg="transformer" type="transformer" output="screen">
             <rosparam file="$(find transformer)/config/camera_0_transformer.yaml"/>
         </node>
@@ -14,7 +21,12 @@
 
     <group ns="camera_1">
         <include file="$(find tycho_launchers)/launch/mono_camera_1.launch" />
-        <node name="tracker" pkg="tracker" type="tracker" output="screen"/>
+        <node if="$(arg crop)" name="cropper" pkg="cropper" type="cropper" output="screen">
+            <rosparam file="$(find cropper)/config/camera_1_cropper.yaml"/>
+        </node>
+        <node name="tracker" pkg="tracker" type="tracker" output="screen">
+            <param name="crop" value="$(arg crop)"/>
+        </node>
         <node name="transformer" pkg="transformer" type="transformer" output="screen">
             <rosparam file="$(find transformer)/config/camera_1_transformer.yaml"/>
         </node> 
@@ -22,7 +34,12 @@
 
     <group ns="camera_2">
         <include file="$(find tycho_launchers)/launch/mono_camera_2.launch" />
-        <node name="tracker" pkg="tracker" type="tracker" output="screen"/>
+        <node if="$(arg crop)" name="cropper" pkg="cropper" type="cropper" output="screen">
+            <rosparam file="$(find cropper)/config/camera_2_cropper.yaml"/>
+        </node>
+        <node name="tracker" pkg="tracker" type="tracker" output="screen">
+            <param name="crop" value="$(arg crop)"/>
+        </node>
         <node name="transformer" pkg="transformer" type="transformer" output="screen">
             <rosparam file="$(find transformer)/config/camera_2_transformer.yaml"/>
         </node>

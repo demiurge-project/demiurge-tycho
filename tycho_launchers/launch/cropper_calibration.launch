@@ -1,0 +1,18 @@
+<launch>
+    <node name="supervisor" pkg="cropper" type="supervisor" output="screen" required="true"/>
+
+	<group ns="camera_0">
+		<include file="$(find tycho_launchers)/launch/mono_camera_0.launch" />
+		<node name="calibrator" pkg="cropper" type="calibrator" output="screen"/> 
+	</group>
+
+	<group ns="camera_1">
+		<include file="$(find tycho_launchers)/launch/mono_camera_1.launch" />
+		<node name="calibrator" pkg="cropper" type="calibrator" output="screen"/> 
+	</group>
+
+	<group ns="camera_2">
+		<include file="$(find tycho_launchers)/launch/mono_camera_2.launch" />
+		<node name="calibrator" pkg="cropper" type="calibrator" output="screen"/> 
+	</group>
+</launch>
