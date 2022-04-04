@@ -20,7 +20,7 @@ public:
 		std::string path = ros::package::getPath("transformer") + "/config";
 		std::string ros_namespace = ros::this_node::getNamespace();
 		std::string filename = path + ros_namespace + "_transformer.yaml";
-		yaml_.open(filename);
+		yaml_.open(filename, std::fstream::out | std::fstream::trunc);
 		if (yaml_.is_open())
 		{
 			ROS_INFO("Writing configuration to %s", filename.c_str());

@@ -13,7 +13,7 @@ class CropperCalibrator
 {
 public:
     CropperCalibrator()
-        : image_transport_(node_handle_), cropped(false), n_points(0)
+        : image_transport_(node_handle_), cropped(false), n_points(0), ratio_(0.8)
     {
         image_sub_ = image_transport_.subscribe("camera/image_raw", 1,
                                                 &CropperCalibrator::imageCallback, this);
@@ -23,7 +23,7 @@ public:
         std::string path = ros::package::getPath("cropper") + "/config";
 		std::string ros_namespace = ros::this_node::getNamespace();
 		std::string filename = path + ros_namespace + "_cropper.yaml";
-		yaml_.open(filename);
+		yaml_.open(filename, std::fstream::out | std::fstream::trunc);
 		if (yaml_.is_open())
 		{
 			ROS_INFO("Writing configuration to %s", filename.c_str());
@@ -32,6 +32,14 @@ public:
 		{
 			ROS_ERROR("Could not open %s", filename.c_str());
 		}
+
+        // Get resizing ratio parameter
+        node_handle_.getParam("calibrator/ratio", ratio_);
+        if (ratio_ < 0.0)
+        {
+            ROS_WARN("Resizing ratio must be positive. Using absolute value");
+            ratio_ = -ratio_;
+        }
     }
 
     ~CropperCalibrator()
@@ -61,7 +69,7 @@ public:
             }
 
             // Close polygon
-            cv::line(img_,vertices_[vertices_.size()-1], vertices_[0], cv::Scalar(0, 0, 0));
+            cv::line(img_resize_, vertices_[vertices_.size()-1], vertices_[0], cv::Scalar(0, 0, 0));
 
             cropped = true;
 
@@ -74,18 +82,22 @@ public:
             if (vertices_.size() == 0)
             {
                 // First click - just draw point
-                img_.at<cv::Vec3b>(x, y) = cv::Vec3b(255, 0, 0);
+                img_resize_.at<cv::Vec3b>(x, y) = cv::Vec3b(255, 0, 0);
             }
             else
             {
                 // Second, or later click, draw line to previous vertex
-                cv::line(img_, cv::Point(x, y), vertices_[vertices_.size()-1], cv::Scalar(0, 0, 0));
+                cv::line(img_resize_, cv::Point(x, y), vertices_[vertices_.size()-1], cv::Scalar(0, 0, 0));
             }
 
             vertices_.push_back(cv::Point(x, y));
 
+            // Recover pixels in original image
+            int x_img = x / ratio_;
+            int y_img = y / ratio_;
+
             // Append to YAML file
-            yaml_ << "point_" << n_points << " : [" << x << ", " << y << "]\n";
+            yaml_ << "point_" << n_points << " : [" << x_img << ", " << y_img << "]\n";
             n_points++;
 
             return;
@@ -107,12 +119,13 @@ public:
 
         // Store image for use in cropping algorithm
         img_ = cv_ptr->image;
+        cv::resize(img_, img_resize_, cv::Size(), ratio_, ratio_, cv::INTER_AREA);
 
         // If polygon has not been delimited start cropping process
         if (!cropped)
         {
             //Create a window
-            cv::namedWindow("ImageDisplay", 1);
+            cv::namedWindow("ImageDisplay", cv::WINDOW_AUTOSIZE);
 
             // Register a mouse callback
             cv::setMouseCallback("ImageDisplay", mouseCallback, this);
@@ -120,7 +133,7 @@ public:
             // Cropped is false until a closed polygon has been defined
             while (!cropped)
             {
-                cv::imshow("ImageDisplay", img_);
+                cv::imshow("ImageDisplay", img_resize_);
                 cv::waitKey(50);
             }
 
@@ -139,8 +152,9 @@ private:
     image_transport::Subscriber image_sub_;
 	ros::Publisher pub_alive_;
     std::ofstream yaml_;
-    cv::Mat img_;
+    cv::Mat img_, img_resize_;
     std::vector<cv::Point> vertices_;
+    double ratio_;
 };
 
 int main(int argc, char **argv)
