@@ -8,40 +8,40 @@
 
     <group ns="camera_0">
         <include file="$(find tycho_launchers)/launch/mono_camera_0.launch" /> 
-        <node if="$(arg crop)" name="cropper" pkg="cropper" type="cropper" output="screen">
-            <rosparam file="$(find cropper)/config/camera_0_cropper.yaml"/>
+        <node if="$(arg crop)" name="cropper" pkg="tycho_cropper" type="cropper" output="screen">
+            <rosparam file="$(find tycho_cropper)/config/camera_0_cropper.yaml"/>
         </node>
-        <node name="tracker" pkg="tracker" type="tracker" output="screen">
+        <node name="tracker" pkg="tycho_tracker" type="tracker" output="screen">
             <param name="crop" value="$(arg crop)"/>
         </node>
-        <node name="transformer" pkg="transformer" type="transformer" output="screen">
-            <rosparam file="$(find transformer)/config/camera_0_transformer.yaml"/>
+        <node name="transformer" pkg="tycho_transformer" type="transformer" output="screen">
+            <rosparam file="$(find tycho_transformer)/config/camera_0_transformer.yaml"/>
         </node>
     </group>
 
     <group ns="camera_1">
         <include file="$(find tycho_launchers)/launch/mono_camera_1.launch" />
-        <node if="$(arg crop)" name="cropper" pkg="cropper" type="cropper" output="screen">
-            <rosparam file="$(find cropper)/config/camera_1_cropper.yaml"/>
+        <node if="$(arg crop)" name="cropper" pkg="tycho_cropper" type="cropper" output="screen">
+            <rosparam file="$(find tycho_cropper)/config/camera_1_cropper.yaml"/>
         </node>
-        <node name="tracker" pkg="tracker" type="tracker" output="screen">
+        <node name="tracker" pkg="tycho_tracker" type="tracker" output="screen">
             <param name="crop" value="$(arg crop)"/>
         </node>
-        <node name="transformer" pkg="transformer" type="transformer" output="screen">
-            <rosparam file="$(find transformer)/config/camera_1_transformer.yaml"/>
+        <node name="transformer" pkg="tycho_transformer" type="transformer" output="screen">
+            <rosparam file="$(find tycho_transformer)/config/camera_1_transformer.yaml"/>
         </node> 
     </group>
 
     <group ns="camera_2">
         <include file="$(find tycho_launchers)/launch/mono_camera_2.launch" />
-        <node if="$(arg crop)" name="cropper" pkg="cropper" type="cropper" output="screen">
-            <rosparam file="$(find cropper)/config/camera_2_cropper.yaml"/>
+        <node if="$(arg crop)" name="cropper" pkg="tycho_cropper" type="cropper" output="screen">
+            <rosparam file="$(find tycho_cropper)/config/camera_2_cropper.yaml"/>
         </node>
-        <node name="tracker" pkg="tracker" type="tracker" output="screen">
+        <node name="tracker" pkg="tycho_tracker" type="tracker" output="screen">
             <param name="crop" value="$(arg crop)"/>
         </node>
-        <node name="transformer" pkg="transformer" type="transformer" output="screen">
-            <rosparam file="$(find transformer)/config/camera_2_transformer.yaml"/>
+        <node name="transformer" pkg="tycho_transformer" type="transformer" output="screen">
+            <rosparam file="$(find tycho_transformer)/config/camera_2_transformer.yaml"/>
         </node>
     </group>
 
