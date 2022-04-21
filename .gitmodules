@@ -1,0 +1,4 @@
+[submodule "avt_vimba_camera"]
+	path = avt_vimba_camera
+	url = https://github.com/demiurge-project/avt_vimba_camera.git
+	branch = tycho
