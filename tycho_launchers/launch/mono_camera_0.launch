@@ -7,7 +7,7 @@
   <arg name="use_measurement_time" default="false" doc="Use the measurement time from the camera"/>
   <arg name="ptp_offset" default="-37" doc="Offset to add to the timestamp from the camera (s).
     Useful for converting from TAI to UTC time. Only applies if use_measurement_time is true"/>
-  <arg name="camera_info_url" default="file://$(find tycho_launchers)/calibrations/camera_0_calibration-20220201.yaml"/>
+  <arg name="camera_info_url" default="file://$(find tycho_launchers)/config/camera_0_calibration.yaml"/>
   <arg name="print_all_features" default="false" doc="Show all camera features on the console during startup"/>
   <arg name="image_proc" default="true" doc="Launch image_proc with driver"/>
 
