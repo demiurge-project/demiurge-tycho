@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>transformer</name>
+  <name>tycho_transformer</name>
   <version>0.0.0</version>
-  <description>The transformer package</description>
+  <description>The tycho_transformer package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
