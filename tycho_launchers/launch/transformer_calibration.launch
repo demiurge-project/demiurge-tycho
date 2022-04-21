@@ -1,29 +1,29 @@
 <launch>
-	<arg name="crop" default="false"/>
+	<arg name="crop" value="false"/>
 
 	<node name="supervisor" pkg="transformer" type="supervisor" output="screen" required="true"/>
 
 	<group ns="camera_0">
 		<include file="$(find tycho_launchers)/launch/mono_camera_0.launch" />
 		<node name="tracker" pkg="tracker" type="tracker" output="screen">
-            <param name="crop" value="$(arg crop)"/>
-        </node>
+			<param name="crop" value="$(arg crop)"/>
+		</node>
 		<node name="calibrator" pkg="transformer" type="calibrator" output="screen"/> 
 	</group>
 
 	<group ns="camera_1">
 		<include file="$(find tycho_launchers)/launch/mono_camera_1.launch" />
 		<node name="tracker" pkg="tracker" type="tracker" output="screen">
-            <param name="crop" value="$(arg crop)"/>
-        </node>
+			<param name="crop" value="$(arg crop)"/>
+		</node>
 		<node name="calibrator" pkg="transformer" type="calibrator" output="screen"/> 
 	</group>
 
 	<group ns="camera_2">
 		<include file="$(find tycho_launchers)/launch/mono_camera_2.launch" />
 		<node name="tracker" pkg="tracker" type="tracker" output="screen">
-            <param name="crop" value="$(arg crop)"/>
-        </node>
+			<param name="crop" value="$(arg crop)"/>
+		</node>
 		<node name="calibrator" pkg="transformer" type="calibrator" output="screen"/> 
 	</group>
 </launch>
