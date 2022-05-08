@@ -1,453 +1,453 @@
 <launch> 
 
-    <!--node pkg="tf2_ros" type="static_transform_publisher" name="epuck_0_broadcaster" args="0 0 0 0 0 0 arena epuck_0" />
-    <node pkg="tf2_ros" type="static_transform_publisher" name="epuck_1_broadcaster" args="0 0 0 0 0 0 arena epuck_1" />
-    <node pkg="tf2_ros" type="static_transform_publisher" name="camera_2_broadcaster" args="44   -8 0 0 0 0.0525831 map camera_2" /-->
+	<!--node pkg="tf2_ros" type="static_transform_publisher" name="epuck_0_broadcaster" args="0 0 0 0 0 0 arena epuck_0" />
+	<node pkg="tf2_ros" type="static_transform_publisher" name="epuck_1_broadcaster" args="0 0 0 0 0 0 arena epuck_1" />
+	<node pkg="tf2_ros" type="static_transform_publisher" name="camera_2_broadcaster" args="44   -8 0 0 0 0.0525831 map camera_2" /-->
 
-    <arg name="crop" default="false"/>
+	<arg name="crop" default="false"/>
 
-    <group ns="camera_0">
-        <include file="$(find tycho_launchers)/launch/mono_camera_0.launch" /> 
-        <node if="$(arg crop)" name="cropper" pkg="tycho_cropper" type="cropper" output="screen">
-            <rosparam file="$(find tycho_cropper)/config/camera_0_cropper.yaml"/>
-        </node>
-        <node name="tracker" pkg="tycho_tracker" type="tracker" output="screen">
-            <param name="crop" value="$(arg crop)"/>
-        </node>
-        <node name="transformer" pkg="tycho_transformer" type="transformer" output="screen">
-            <rosparam file="$(find tycho_transformer)/config/camera_0_transformer.yaml"/>
-        </node>
-    </group>
+	<group ns="camera_0">
+		<include file="$(find tycho_launchers)/launch/mono_camera_0.launch" /> 
+		<node if="$(arg crop)" name="cropper" pkg="tycho_cropper" type="cropper" output="screen">
+			<rosparam file="$(find tycho_cropper)/config/camera_0_cropper.yaml"/>
+		</node>
+		<node name="tracker" pkg="tycho_tracker" type="tracker" output="screen">
+			<param name="crop" value="$(arg crop)"/>
+		</node>
+		<node name="transformer" pkg="tycho_transformer" type="transformer" output="screen">
+			<rosparam file="$(find tycho_transformer)/config/camera_0_transformer.yaml"/>
+		</node>
+	</group>
 
-    <group ns="camera_1">
-        <include file="$(find tycho_launchers)/launch/mono_camera_1.launch" />
-        <node if="$(arg crop)" name="cropper" pkg="tycho_cropper" type="cropper" output="screen">
-            <rosparam file="$(find tycho_cropper)/config/camera_1_cropper.yaml"/>
-        </node>
-        <node name="tracker" pkg="tycho_tracker" type="tracker" output="screen">
-            <param name="crop" value="$(arg crop)"/>
-        </node>
-        <node name="transformer" pkg="tycho_transformer" type="transformer" output="screen">
-            <rosparam file="$(find tycho_transformer)/config/camera_1_transformer.yaml"/>
-        </node> 
-    </group>
+	<group ns="camera_1">
+		<include file="$(find tycho_launchers)/launch/mono_camera_1.launch" />
+		<node if="$(arg crop)" name="cropper" pkg="tycho_cropper" type="cropper" output="screen">
+			<rosparam file="$(find tycho_cropper)/config/camera_1_cropper.yaml"/>
+		</node>
+		<node name="tracker" pkg="tycho_tracker" type="tracker" output="screen">
+			<param name="crop" value="$(arg crop)"/>
+		</node>
+		<node name="transformer" pkg="tycho_transformer" type="transformer" output="screen">
+			<rosparam file="$(find tycho_transformer)/config/camera_1_transformer.yaml"/>
+		</node> 
+	</group>
 
-    <group ns="camera_2">
-        <include file="$(find tycho_launchers)/launch/mono_camera_2.launch" />
-        <node if="$(arg crop)" name="cropper" pkg="tycho_cropper" type="cropper" output="screen">
-            <rosparam file="$(find tycho_cropper)/config/camera_2_cropper.yaml"/>
-        </node>
-        <node name="tracker" pkg="tycho_tracker" type="tracker" output="screen">
-            <param name="crop" value="$(arg crop)"/>
-        </node>
-        <node name="transformer" pkg="tycho_transformer" type="transformer" output="screen">
-            <rosparam file="$(find tycho_transformer)/config/camera_2_transformer.yaml"/>
-        </node>
-    </group>
+	<group ns="camera_2">
+		<include file="$(find tycho_launchers)/launch/mono_camera_2.launch" />
+		<node if="$(arg crop)" name="cropper" pkg="tycho_cropper" type="cropper" output="screen">
+			<rosparam file="$(find tycho_cropper)/config/camera_2_cropper.yaml"/>
+		</node>
+		<node name="tracker" pkg="tycho_tracker" type="tracker" output="screen">
+			<param name="crop" value="$(arg crop)"/>
+		</node>
+		<node name="transformer" pkg="tycho_transformer" type="transformer" output="screen">
+			<rosparam file="$(find tycho_transformer)/config/camera_2_transformer.yaml"/>
+		</node>
+	</group>
 
-    <!--We determined empirically that the detection rates of the tags are, from highest to lowest:
-    38 17 37 23 31 40 22 10 45 41 16  3 30 33 24 36 25 13 43 26
-     5 21 42 49  1 18 32  7 48 29  8 15  2 27  4 34  9  6 20 19
-    44 46 11 39 14 12 35 28  0 47-->
-    
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_0" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_0"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_0/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_0/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_0/odom"/>
-    </node>
+	<!--We determined empirically that the detection rates of the tags are, from highest to lowest:
+	38 17 37 23 31 40 22 10 45 41 16  3 30 33 24 36 25 13 43 26
+	 5 21 42 49  1 18 32  7 48 29  8 15  2 27  4 34  9  6 20 19
+	44 46 11 39 14 12 35 28  0 47-->
+	
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_0" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_0"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_0/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_0/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_0/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_1" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_1"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_1/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_1/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_1/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_1" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_1"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_1/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_1/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_1/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_2" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" /> 
-        <param name="base_link_frame" value="base_link_2"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_2/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_2/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_2/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_2" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" /> 
+		<param name="base_link_frame" value="base_link_2"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_2/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_2/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_2/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_3" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_3"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_3/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_3/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_3/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_3" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_3"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_3/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_3/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_3/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_4" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_4"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_4/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_4/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_4/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_4" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_4"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_4/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_4/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_4/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_5" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_5"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_5/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_5/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_5/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_5" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_5"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_5/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_5/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_5/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_6" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_6"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_6/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_6/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_6/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_6" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_6"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_6/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_6/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_6/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_7" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_7"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_7/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_7/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_7/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_7" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_7"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_7/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_7/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_7/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_8" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_8"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_8/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_8/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_8/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_8" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_8"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_8/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_8/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_8/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_9" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_9"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_9/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_9/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_9/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_9" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_9"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_9/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_9/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_9/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_10" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_10"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_10/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_10/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_10/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_10" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_10"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_10/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_10/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_10/odom"/>
+	</node>
 
-     <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_11" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_11"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_11/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_11/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_11/odom"/>
-    </node>
+	 <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_11" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_11"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_11/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_11/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_11/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_12" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_12"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_12/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_12/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_12/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_12" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_12"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_12/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_12/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_12/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_13" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_13"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_13/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_13/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_13/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_13" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_13"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_13/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_13/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_13/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_14" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_14"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_14/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_14/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_14/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_14" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_14"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_14/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_14/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_14/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_15" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_15"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_15/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_15/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_15/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_15" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_15"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_15/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_15/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_15/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_16" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_16"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_16/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_16/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_16/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_16" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_16"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_16/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_16/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_16/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_17" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_17"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_17/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_17/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_17/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_17" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_17"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_17/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_17/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_17/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_18" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_18"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_18/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_18/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_18/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_18" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_18"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_18/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_18/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_18/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_19" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_19"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_19/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_19/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_19/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_19" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_19"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_19/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_19/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_19/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_20" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_20"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_20/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_20/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_20/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_20" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_20"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_20/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_20/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_20/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_21" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_21"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_21/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_21/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_21/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_21" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_21"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_21/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_21/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_21/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_22" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_22"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_22/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_22/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_22/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_22" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_22"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_22/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_22/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_22/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_23" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_23"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_23/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_23/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_23/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_23" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_23"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_23/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_23/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_23/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_24" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_24"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_24/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_24/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_24/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_24" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_24"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_24/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_24/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_24/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_25" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_25"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_25/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_25/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_25/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_25" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_25"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_25/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_25/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_25/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_26" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_26"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_26/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_26/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_26/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_26" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_26"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_26/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_26/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_26/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_27" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_27"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_27/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_27/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_27/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_27" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_27"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_27/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_27/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_27/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_28" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_28"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_28/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_28/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_28/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_28" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_28"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_28/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_28/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_28/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_29" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_29"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_29/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_29/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_29/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_29" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_29"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_29/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_29/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_29/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_30" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_30"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_30/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_30/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_30/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_30" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_30"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_30/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_30/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_30/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_31" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_31"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_31/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_31/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_31/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_31" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_31"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_31/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_31/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_31/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_32" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_32"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_32/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_32/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_32/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_32" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_32"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_32/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_32/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_32/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_33" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_33"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_33/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_33/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_33/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_33" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_33"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_33/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_33/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_33/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_34" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_34"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_34/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_34/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_34/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_34" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_34"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_34/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_34/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_34/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_35" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_35"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_35/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_35/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_35/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_35" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_35"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_35/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_35/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_35/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_36" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_36"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_36/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_36/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_36/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_36" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_36"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_36/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_36/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_36/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_37" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_37"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_37/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_37/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_37/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_37" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_37"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_37/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_37/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_37/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_38" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_38"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_38/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_38/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_38/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_38" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_38"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_38/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_38/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_38/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_39" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_39"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_39/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_39/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_39/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_39" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_39"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_39/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_39/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_39/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_40" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_40"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_40/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_40/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_40/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_40" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_40"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_40/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_40/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_40/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_41" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_41"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_41/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_41/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_41/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_41" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_41"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_41/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_41/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_41/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_42" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_42"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_42/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_42/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_42/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_42" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_42"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_42/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_42/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_42/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_43" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_43"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_43/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_43/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_43/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_43" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_43"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_43/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_43/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_43/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_44" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_44"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_44/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_44/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_44/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_44" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_44"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_44/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_44/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_44/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_45" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_45"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_45/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_45/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_45/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_45" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_45"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_45/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_45/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_45/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_46" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_46"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_46/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_46/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_46/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_46" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_46"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_46/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_46/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_46/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_47" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_47"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_47/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_47/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_47/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_47" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_47"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_47/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_47/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_47/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_48" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_48"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_48/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_48/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_48/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_48" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_48"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_48/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_48/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_48/odom"/>
+	</node>
 
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_49" output="screen">
-        <rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
-        <param name="base_link_frame" value="base_link_49"/>
-        <remap from="camera_0/odom" to="/camera_0/epuck_49/odom"/>
-        <remap from="camera_1/odom" to="/camera_1/epuck_49/odom"/>
-        <remap from="camera_2/odom" to="/camera_2/epuck_49/odom"/>
-    </node>
+	<node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" ns="epuck_49" output="screen">
+		<rosparam command="load" file="$(find tycho_launchers)/config/ukf_tycho.yaml" />  
+		<param name="base_link_frame" value="base_link_49"/>
+		<remap from="camera_0/odom" to="/camera_0/epuck_49/odom"/>
+		<remap from="camera_1/odom" to="/camera_1/epuck_49/odom"/>
+		<remap from="camera_2/odom" to="/camera_2/epuck_49/odom"/>
+	</node>
 
 </launch>

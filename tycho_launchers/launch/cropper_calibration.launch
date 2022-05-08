@@ -1,26 +1,26 @@
 <launch>
 	<arg name="ratio" default="0.8"/>
 
-    <node name="supervisor" pkg="tycho_cropper" type="supervisor" output="screen" required="true"/>
+	<node name="supervisor" pkg="tycho_cropper" type="supervisor" output="screen" required="true"/>
 
 	<group ns="camera_0">
 		<include file="$(find tycho_launchers)/launch/mono_camera_0.launch" />
 		<node name="calibrator" pkg="tycho_cropper" type="calibrator" output="screen"> 
 			<param name="ratio" value="$(arg ratio)"/>
-        </node>
+		</node>
 	</group>
 
 	<group ns="camera_1">
 		<include file="$(find tycho_launchers)/launch/mono_camera_1.launch" />
 		<node name="calibrator" pkg="tycho_cropper" type="calibrator" output="screen"> 
 			<param name="ratio" value="$(arg ratio)"/>
-        </node>
+		</node>
 	</group>
 
 	<group ns="camera_2">
 		<include file="$(find tycho_launchers)/launch/mono_camera_2.launch" />
 		<node name="calibrator" pkg="tycho_cropper" type="calibrator" output="screen"> 
 			<param name="ratio" value="$(arg ratio)"/>
-        </node>
+		</node>
 	</group>
 </launch>
