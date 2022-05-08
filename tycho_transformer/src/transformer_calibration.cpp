@@ -17,7 +17,7 @@ public:
 		pub_alive_ = node_handle_.advertise<std_msgs::Bool>("alive", 10);
 
 		// Open YAML file to store the calibration parameters
-		std::string path = ros::package::getPath("transformer") + "/config";
+		std::string path = ros::package::getPath("tycho_transformer") + "/config";
 		std::string ros_namespace = ros::this_node::getNamespace();
 		std::string filename = path + ros_namespace + "_transformer.yaml";
 		yaml_.open(filename, std::fstream::out | std::fstream::trunc);
@@ -51,7 +51,7 @@ public:
 	const std::vector<int> calibration_tags = {38, 17, 37, 23, 31, 40, 22, 10, 45};
 
 	// grid_dim is the radius of the calibration board
-	const double grid_dim = 0.1185;
+	const double grid_dim = 0.15;
 
 	void calibratorCallback(const std_msgs::UInt32MultiArrayConstPtr& msg)
 	{
@@ -67,12 +67,12 @@ public:
 				struct point tag_centre = {0.0};
 				for (int j = 0; j < 4; ++j)
 				{
-					// Transform left-handed (camera) frame to right-handed (arena) frame
+					// Rotate 180 deg about y-axis
 					tag_centre.x -= static_cast<double>(msg->data.at(2*j + 1 + i)) / 4.0;
 					tag_centre.y += static_cast<double>(msg->data.at(2*j + 2 + i)) / 4.0;
 				}
 
-				// Add tag to map
+				// Add tag to list
 				tags[msg->data.at(i)] = tag_centre;
 			}
 
