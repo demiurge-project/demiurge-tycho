@@ -36,14 +36,14 @@ int main(int argc, char **argv)
 	ros::Rate rate(30);
 	while (ros::ok() && (supervisor_camera_0.alive ||
 	                     supervisor_camera_1.alive ||
-						 supervisor_camera_2.alive))
+	                     supervisor_camera_2.alive))
 	{
 		ros::spinOnce();
 		rate.sleep();
 	}
 
-    ros::Duration(0.5).sleep();
-    ROS_INFO("Cropper calibration done. Shutting down...");
-    
+	ros::Duration(0.5).sleep();
+	ROS_INFO("Cropper calibration done. Shutting down...");
+
 	return 0;
 }
