@@ -10,7 +10,8 @@ from std_msgs.msg import String
 class RosbagRecorder:
 
     def __init__(self):
-        self.process = None
+        self.summary_process = None  # recording the summary ROSBag: positions, compressed video
+        self.video_process = None  # recording the full resolution main camera
         self.is_recording = False
 
 
@@ -28,14 +29,16 @@ class RosbagRecorder:
             return
         rospy.loginfo(f"{rospy.get_caller_id()}: Starting recording")
         self.is_recording = True
-        self.process = subprocess.Popen(["rosbag", "record", "-a", "-O", f"tycho-experiment-{datetime.datetime.now().strftime('%y%m%d-%H%M%S')}.bag"])
+        self.summary_process = subprocess.Popen(["rosbag", "record", "-O", f"tycho-experiment-{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}-summary.bag", "-e", "/camera_(.)/camera/image_rect_color/compressed", "-e", "/camera_(.)/camera/camera_info", "-e", "/epuck_(.*)/odometry/filtered"])
+        self.video_process = subprocess.Popen(["rosbag", "record", "-O", f"tycho-experiment-{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}-video.bag", "-e", "/camera_2/camera/image_rect_color", "-e", "/camera_(.)/camera/camera_info"])
     
     def stop_recording(self):
         if not self.is_recording:
             return
         rospy.loginfo(f"{rospy.get_caller_id()}: Stopping recording")
         self.is_recording = False
-        self.process.terminate()
+        self.summary_process.terminate()
+        self.video_process.terminate()
     
 def start_listening():
     # In ROS, nodes are uniquely named. If two nodes with the same
