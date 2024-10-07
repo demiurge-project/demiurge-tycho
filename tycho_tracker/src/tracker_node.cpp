@@ -18,6 +18,7 @@ class Tracker
 	cv::Mat camera_matrix, dist_coeff; // These can be set after camera calibration to undistort image
 	cv::Ptr<cv::aruco::DetectorParameters> parameters;
 	cv::Ptr<cv::aruco::Dictionary> dictionary;
+	//cv::Mat kernel; // for sharpening; negligible effect observed
 
 public:
 	Tracker()
@@ -42,6 +43,17 @@ public:
 		dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 
 		parameters = cv::aruco::DetectorParameters::create();
+
+		// Modify parameters to improve marker detection
+		parameters->adaptiveThreshWinSizeMax = 9;
+		parameters->adaptiveThreshWinSizeStep = 2;
+		parameters->minDistanceToBorder = 0;
+		parameters->perspectiveRemovePixelPerCell = 5;
+		parameters->cornerRefinementMethod = cv::aruco::CORNER_REFINE_SUBPIX;
+
+		//// Kernel for image sharpening
+		//float entries[9] = {0, -1, 0, -1, 5, -1, 0, -1, 0};
+		//kernel = cv::Mat(3, 3, CV_32F, entries);
 	}
 
 	// Subscriber callback function
@@ -63,6 +75,11 @@ public:
 		// List that will store detection results
 		std::vector<int> ids;
 		std::vector<std::vector<cv::Point2f> > corners;
+
+		//// Sharpen image to improve marker detection
+		//cv::Mat sharp_frame;
+		//cv::filter2D(cv_ptr->image, sharp_frame, -1, kernel);
+		//cv::aruco::detectMarkers(sharp_frame, dictionary, corners, ids, parameters);
 
 		// Aruco detection function
 		cv::aruco::detectMarkers(cv_ptr->image, dictionary, corners, ids, parameters);
